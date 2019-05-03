@@ -59,7 +59,7 @@ extern bool is_connected;
 
 void hw_test_timer_cb(void)
 {
-	system_os_post(0,0,0);
+	system_os_post(0,0,0);//向任务发送消息
 }
 void test_task (os_event_t *e)
 {
@@ -69,11 +69,11 @@ void test_task (os_event_t *e)
 				dh11Read(&ds18b20temp,&ds18b20humi);
 //				ds18b20temp=ds18b20ReadTemp();
 				os_printf("temp:%d\r\n",ds18b20temp);
-				if(is_connected)
+				if(is_connected)//login success.
 				{
 					os_printf("-----\r\n");
 					char buffer[255]={0};
-					os_sprintf(buffer,"(mcastTermFormatState \"tmp\" %d)\n",ds18b20temp);
+					os_sprintf(buffer,"(mcastTermFormatState \"tmp\" %d)\n",ds18b20temp);//C3-6 终端向云端上报状态
 					espconn_sent(&user_tcp_conn,buffer,strlen(buffer));
 				}
 				break;
@@ -141,16 +141,16 @@ user_rf_cal_sector_set(void)
 
 void user_init(void)
 {
-    uart_init(BIT_RATE_115200, BIT_RATE_115200);
-    os_event_t *testQueue;		//消息队列指针
+    uart_init(BIT_RATE_115200, BIT_RATE_115200);//串口初始化
+    os_event_t *testQueue;//消息队列指针
     is_connected=false;
     dh11Init();
     os_delay_us(1000);
     os_printf("\r\n==SDK version : %s==\r\n",system_get_sdk_version());
     testQueue=(os_event_t *)os_malloc(sizeof(os_event_t)*4);
-    system_os_task(test_task,0,testQueue,4);
-	os_timer_disarm(&timer);
-	os_timer_setfn(&timer,hw_test_timer_cb,NULL);
-	os_timer_arm(&timer,1000,TRUE);
+    system_os_task(test_task,0,testQueue,4);//创建系统任务（任务函数，任务优先级，消息队列指针，消息队列深度）
+	os_timer_disarm(&timer);//软件定时器
+	os_timer_setfn(&timer,hw_test_timer_cb,NULL);//设置定时器回调函数（定时器结构，定时器回调函数，回调函数的参数）
+	os_timer_arm(&timer,1000,TRUE);//使能ms定时器（定时器结构，定时时间，定时器是否重复）
     wifi_connect();
 }

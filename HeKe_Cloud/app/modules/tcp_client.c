@@ -16,11 +16,11 @@ void ICACHE_FLASH_ATTR user_tcp_recv_cb(void *arg,char *pdata,unsigned short len
 	os_printf("receive data :%s\r\n",pdata);
 	os_delay_us(300);
 //	espconn_disconnect((struct espconn *)arg);
-	if(strncmp(pdata,"(getall )",len)==0) //login success
+	if(strncmp(pdata,"(getall )",len)==0) //login success，return getall
 	{
 		is_connected=true;
 		char buffer[255]={0};
-		os_sprintf(buffer,"(setTermDetail \"pid\" \"1\" \"mid\" \"2\" \"cid\" \"1\" \"provider\" \"LSA\" \"category\" \"yuba\" \"model\" \"phone\" \"400-800-999\")\n");//C3-2
+		os_sprintf(buffer,"(setTermDetail \"pid\" \"1\" \"mid\" \"2\" \"cid\" \"1\" \"provider\" \"LSA\" \"category\" \"yuba\" \"model\" \"phone\" \"400-800-999\")\n");//C3-2 终端向云端上报终端详细、厂家信息
 		espconn_sent(pespconn,buffer,strlen(buffer));
 	}
 }
@@ -32,7 +32,7 @@ void ICACHE_FLASH_ATTR user_tcp_connect_cb(void *arg)
 	espconn_regist_recvcb(pespconn,user_tcp_recv_cb);
 	espconn_regist_sentcb(pespconn,user_tcp_sent_cb);
 	espconn_regist_disconcb(pespconn,user_tcp_discon_cb);
-	os_sprintf(buffer,"(login \"wq_8F_ccd29be70139\" \"code\" \"azBhQk9LR0tzelNncmhtK2dGMFNFOTNURFAyWkk1ZjFqaDZZOXYzOEVMbkRqRC9wSzVkNUlSY0o4ZG9KdTVyWWJQ\" \"DEVICE\")\n");//C3-1
+	os_sprintf(buffer,"(login \"wq_8F_ccd29be70139\" \"code\" \"azBhQk9LR0tzelNncmhtK2dGMFNFOTNURFAyWkk1ZjFqaDZZOXYzOEVMbkRqRC9wSzVkNUlSY0o4ZG9KdTVyWWJQ\" \"DEVICE\")\n");//C3-1 用户登陆认证
 	espconn_sent(pespconn,buffer,strlen(buffer));//teminal to login the cloud of the API
 }
 
